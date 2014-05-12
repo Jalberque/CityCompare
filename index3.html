@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
+    <title>
+      Simple Map
+    </title>
+    <link rel="stylesheet" href="http://js.arcgis.com/3.9/js/esri/css/esri.css">
+    <style>
+      html, body, section {
+        width: 100%;
+        height: 100%;
+      }
+      #mapral {
+        border:2px solid;
+        border-radius:10px;
+        width: 50%;
+        height: 100%;
+        float: left;
+      }
+      #myform {
+        position: absolute;
+        right: 10%;
+        top: 2%;
+      }
+      #raltitle {
+        border:.5px solid;
+        position: absolute;
+        z-index: 100;
+        border-radius:30px;
+        font-size:24px;
+        font-weight:bold;
+        left: 5%;
+        /*top:350px;
+        */
+        height: 50px;
+        width: 150px;
+        float: left;
+      }
+      #border1{
+        width: 10px;
+      }
+      #austtitle {
+        border:.5px solid;
+        position: absolute;
+        z-index: 100;
+        border-radius:30px;
+        font-size:24px;
+        font-weight:bold;
+        left: 55%;
+        /*top:350px;
+        */
+        height: 50px;
+        width: 150px;
+        float: left;
+      }
+      #mapaust {
+        border:2px solid;
+        border-radius:10px;
+        margin-left: 65%;
+        height: 100%;
+        width: 49%;
+      }
+      body {
+        background-color: #FFF;
+        overflow: hidden;
+        font-family: "Trebuchet MS";
+      }
+    </style>
+    <script src="http://js.arcgis.com/3.9/">
+    </script>
+    <script>
+      var map, map2;
+    
+      
+      require(["esri/map", "dojo/domReady!",
+               "esri/layers/ArcGISDynamicMapServiceLayer", "esri/layers/ArcGISTiledMapServiceLayer",
+               "esri/layers/ImageParameters"],
+              function(Map, ImageParameters, ArcGISDynamicMapServiceLayer, ArcGISTiledMapServiceLayer) {
+                map = new Map("mapral", {
+                  basemap: "gray",
+                  opacity: .5,
+                  center: [-97.75, 30.25], //longitude, latitude
+                  zoom: 10,
+                  maxZoom: 13
+                }
+                             );
+                map2 = new Map("mapaust", {
+                  basemap: "gray",
+                  center: [-78.6447, 35.8189], //longitude, latitude
+                  zoom: 10,
+                  maxZoom: 13
+                }
+                              );
+                var layerURL = "http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_Population_Density/MapServer";
+                var refURL = "http://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Reference/MapServer"
+                    
+                    //Takes a URL to a non cached map service.
+                    var dynamicMapServiceLayer = new ArcGISDynamicMapServiceLayer(layerURL, {"opacity": 0.5}
+                                                                                 );
+                var refMapService = new ArcGISTiledMapServiceLayer(refURL);
+                var dynamicMapServiceLayer2 = new ArcGISDynamicMapServiceLayer(layerURL, {"opacity": 0.5}
+                                                                              )
+                map.addLayer(dynamicMapServiceLayer2);
+                map2.addLayer(dynamicMapServiceLayer);
+                //map.addLayer(refMapService)
+                map.on("zoom-end", updatezoomb);
+                map2.on("zoom-end", updatezooma);
+              }
+             );
+    
+      function updatezoomb() {
+        map2.setLevel(map.getLevel());
+        
+      }
+    
+    
+    function updatezooma() {
+        map.setLevel(map2.getLevel());
+        
+      }
+
+    function popsel() {
+        if(document.getElementById('pop').checked) {
+
+          //for (var i = 0; i < map.layers.length; i++)
+          for (var i = 0; i < 10; i++)
+          {
+            console.log(map.layers[i].name);
+            if (map.layers[i].name == 'pop') {
+            map.removeLayer('pop');
+          }
+
+        }
+      }
+    }
+
+
+
+       /* map.removeLayer();
+          var layerURL = "http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_Population_Density/MapServer";
+        console.log("Pop");//Male radio button is checked
+        }else if(document.getElementById('house').checked) {
+          var layerURL = "http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_Median_Household_Income/MapServer";
+        console.log("House");//Female radio button is checked
+        }
+      }*/
+      
+      
+    </script>
+  </head>
+  
+  <body>
+    <h3>
+      Population Density
+    </h3>
+    <form id="myform" action="">
+      <input type="radio" onchange="popsel()" id="pop" name="demo" value="Pop">
+      Population Density
+      <br>
+      <input type="radio" onchange="popsel()" id="house" name="demo" value="House">
+      Housing Units
+    </form>
+    <div id="mapral">
+      <div id ="raltitle">
+        Austin
+      </div>
+    </div>
+  <div id="border1">
+    </div>
+  <div id="mapaust">
+      <div id ="austtitle">
+        Raleigh
+      </div>
+    </div>
+  </body>

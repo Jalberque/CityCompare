@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
+    <title>Simple Map</title>
+    <link rel="stylesheet" href="http://js.arcgis.com/3.9/js/esri/css/esri.css">
+    <style>
+      html, body, section {
+    width: 80%;
+    height: 100%;
+	}
+	#mapral {
+    width: 50%;
+    height: 100%;
+    background: red;
+    float: left;
+	}
+	#mapaust {
+    margin-left: 65%;
+    height: 100%;
+	width: 50%;
+    background: black;
+	}
+      body {
+        background-color: #FFF;
+        overflow: hidden;
+        font-family: "Trebuchet MS";
+      }
+    </style>
+    <script src="http://js.arcgis.com/3.9/"></script>
+    <script>
+      var map, map2;
+	  
+
+      require(["esri/map", "dojo/domReady!",
+        "esri/layers/ArcGISDynamicMapServiceLayer",
+        "esri/layers/ImageParameters"],
+	  function(Map, ImageParameters, ArcGISDynamicMapServiceLayer) {
+        map = new Map("mapral", {
+          basemap: "topo",
+          center: [-122.45, 37.75], // longitude, latitude
+          zoom: 13
+        });
+		map2 = new Map("mapaust", {
+          basemap: "gray",
+          center: [-122.45, 37.75], // longitude, latitude
+          zoom: 13
+        });
+		
+		var imageParameters = new ImageParameters();
+        imageParameters.format = "jpeg"; //set the image type to PNG24, note default is PNG8.
+
+        //Takes a URL to a non cached map service.
+        var dynamicMapServiceLayer = new ArcGISDynamicMapServiceLayer("http://server.arcgisonline.com/ArcGIS/rest/services/Demographics/USA_Median_Net_Worth/MapServer", {
+		 "opacity" : 0.5,
+          "imageParameters" : imageParameters
+        });
+
+        map.addLayer(dynamicMapServiceLayer);
+      });
+    </script>
+  </head>
+
+  <body>
+    <div id="mapral"></div>
+	<div id="mapaust"></div>
+  </body>
