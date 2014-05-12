@@ -72,6 +72,7 @@
     </script>
     <script>
       var map, map2;
+      var layerURL, huURL, dynamicMapServiceLayer, dynamicMapServiceLayer2, huMapServiceLayer;
     
       
       require(["esri/map", "dojo/domReady!",
@@ -93,17 +94,23 @@
                   maxZoom: 13
                 }
                               );
-                var layerURL = "http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_Population_Density/MapServer";
+                layerURL = "http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_Population_Density/MapServer";
+                huURL = "http://services.arcgisonline.com/arcgis/rest/services/Demographics/USA_Owner_Occupied_Housing/MapServer";
                 var refURL = "http://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Reference/MapServer"
                     
                     //Takes a URL to a non cached map service.
-                    var dynamicMapServiceLayer = new ArcGISDynamicMapServiceLayer(layerURL, {"opacity": 0.5}
+                dynamicMapServiceLayer = new ArcGISDynamicMapServiceLayer(layerURL, {"opacity": 0.5}
                                                                                  );
                 var refMapService = new ArcGISTiledMapServiceLayer(refURL);
-                var dynamicMapServiceLayer2 = new ArcGISDynamicMapServiceLayer(layerURL, {"opacity": 0.5}
+                dynamicMapServiceLayer2 = new ArcGISDynamicMapServiceLayer(layerURL, {"opacity": 0.5}
                                                                               )
-                map.addLayer(dynamicMapServiceLayer2);
-                map2.addLayer(dynamicMapServiceLayer);
+                huMapServiceLayer = new ArcGISDynamicMapServiceLayer(huURL, {"opacity": 0.5}
+                                                                              )
+                huMapServiceLayer2 = new ArcGISDynamicMapServiceLayer(huURL, {"opacity": 0.5}
+                                                                              )
+
+                map.addLayer(dynamicMapServiceLayer);
+                map2.addLayer(dynamicMapServiceLayer2);
                 //map.addLayer(refMapService)
                 map.on("zoom-end", updatezoomb);
                 map2.on("zoom-end", updatezooma);
@@ -122,19 +129,26 @@
       }
 
     function popsel() {
-        if(document.getElementById('pop').checked) {
-
-          //for (var i = 0; i < map.layers.length; i++)
-          for (var i = 0; i < 10; i++)
-          {
-            console.log(map.layers[i].name);
-            if (map.layers[i].name == 'pop') {
-            map.removeLayer('pop');
-          }
-
+        if(document.getElementById('pop').checked)
+        {
+          console.log("pop sel");
+          map.removeLayer(huMapServiceLayer);
+          map2.removeLayer(huMapServiceLayer2);
+          map.addLayer(dynamicMapServiceLayer);
+          map2.addLayer(dynamicMapServiceLayer2);
+          myTitle.innerText = "Population Density"
+        }
+        if(document.getElementById('house').checked)
+        {
+          console.log("house sel");
+          map.removeLayer(dynamicMapServiceLayer);
+          map2.removeLayer(dynamicMapServiceLayer2);
+          map.addLayer(huMapServiceLayer);
+          map2.addLayer(huMapServiceLayer2);
+          myTitle.innerText = "Owner Occupied Housing Units"
         }
       }
-    }
+
 
 
 
@@ -152,15 +166,15 @@
   </head>
   
   <body>
-    <h3>
+    <h3 id="myTitle">
       Population Density
     </h3>
     <form id="myform" action="">
-      <input type="radio" onchange="popsel()" id="pop" name="demo" value="Pop">
+      <input type="radio" onchange="popsel()" checked id="pop" name="demo" value="Pop">
       Population Density
       <br>
       <input type="radio" onchange="popsel()" id="house" name="demo" value="House">
-      Housing Units
+      Owner Occupoed Housing Units
     </form>
     <div id="mapral">
       <div id ="raltitle">
