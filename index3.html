@@ -12,10 +12,19 @@
         width: 100%;
         height: 100%;
       }
+      #legendPane {
+      border: solid #97DCF2 1px;
+      width: 10%;
+      position: absolute;
+      height: 100%;
+      border: 2px solid;
+      z-index: 1000;
+      float: left;
+    }
       #mapral {
         border:2px solid;
         border-radius:10px;
-        width: 50%;
+        width: 40%;
         height: 100%;
         float: left;
       }
@@ -60,7 +69,7 @@
         border-radius:10px;
         margin-left: 65%;
         height: 100%;
-        width: 49%;
+        width: 40%;
       }
       body {
         background-color: #FFF;
@@ -76,9 +85,9 @@
     
       
       require(["esri/map", "dojo/domReady!",
-               "esri/layers/ArcGISDynamicMapServiceLayer", "esri/layers/ArcGISTiledMapServiceLayer",
+               "esri/layers/ArcGISDynamicMapServiceLayer", "esri/layers/ArcGISTiledMapServiceLayer", "dojo/_base/array", "esri/dijit/Legend", 
                "esri/layers/ImageParameters"],
-              function(Map, ImageParameters, ArcGISDynamicMapServiceLayer, ArcGISTiledMapServiceLayer) {
+              function(Map, ImageParameters, ArcGISDynamicMapServiceLayer, ArcGISTiledMapServiceLayer, arrayUtils) {
                 map = new Map("mapral", {
                   basemap: "gray",
                   opacity: .5,
@@ -114,6 +123,19 @@
                 //map.addLayer(refMapService)
                 map.on("zoom-end", updatezoomb);
                 map2.on("zoom-end", updatezooma);
+
+                map.on("layers-add-result", function (evt) {
+        var layerInfo = arrayUtils.map(evt.layers, function (layer, index) {
+          return {layer:layer.layer, title:layer.layer.name};
+        });
+        if (layerInfo.length > 0) {
+          var legendDijit = new Legend({
+            map: map,
+            layerInfos: layerInfo
+          }, "legendDiv");
+          legendDijit.startup();
+        }
+      });
               }
              );
     
@@ -149,6 +171,18 @@
         }
       }
 
+        function addLegend (evt,arrayUtils) {
+        var layerInfo = arrayUtils.map(evt.layers, function (layer, index) {
+          return {layer:layer.layer, title:layer.layer.name};
+        });
+        if (layerInfo.length > 0) {
+          var legendDijit = new Legend({
+            map: map,
+            layerInfos: layerInfo
+          }, "legendDiv");
+          legendDijit.startup();
+        }}
+
 
 
 
@@ -176,11 +210,15 @@
       <input type="radio" onchange="popsel()" id="house" name="demo" value="House">
       Owner Occupoed Housing Units
     </form>
+
+      <div id="legendDiv"></div>
+      </div>
     <div id="mapral">
       <div id ="raltitle">
         Austin
       </div>
     </div>
+
   <div id="border1">
     </div>
   <div id="mapaust">
@@ -188,4 +226,5 @@
         Raleigh
       </div>
     </div>
+    
   </body>
